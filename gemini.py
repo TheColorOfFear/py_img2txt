@@ -43,6 +43,7 @@ def absolutise_url(base, relative):
     return relative
 
 while True:
+    download = False
     # Get input
     cmd = input(escape + "0m" + "> ").strip()
     # Handle things other than requests
@@ -60,6 +61,8 @@ while True:
         # Yes, twice
         url = hist.pop()
         url = hist.pop()
+    elif cmd.lower() == "d":
+        download = True
     else:
         url = cmd
         if not "://" in url:
@@ -67,64 +70,73 @@ while True:
     # Do the Gemini transaction
     success, status, mime, fp = gemini_protocol.gemini(url)
     if success:
-        # Handle text
-        if mime.startswith("text/"):
-            # Decode according to declared charset
-            m = Message()
-            m['content-type'] = mime
-            mime = m.get_content_type()
-            body = fp.read()
-            try:
-                m.set_param("charset","UTF-8")
-                body = body.decode(m.get_param("charset"))
-            except AttributeError:
-                pass
-            # Handle a Gemini map
-            if mime == "text/gemini":
-                menu = []
-                preformatted = False
-                #first, put all the lines into a list
-                lines = []
-                for num, line in enumerate(body.splitlines()):
-                    if line.startswith("```"):
-                        preformatted = not preformatted
-                    elif preformatted:
-                        lines.append(line)
-                    elif line.startswith("=>") and line[2:].strip():
-                        bits = line[2:].strip().split(maxsplit=1)
-                        link_url = bits[0]
-                        link_url = absolutise_url(url, link_url)
-                        menu.append(link_url)
-                        text = bits[1] if len(bits) == 2 else link_url
-                        lines.append("[%d] %s" % (len(menu), text))
-                    else:
-                        linewrapped = textwrap.fill(line, min(80, os.get_terminal_size()[0])).splitlines()
-                        for j in range(len(linewrapped)):
-                            lines.append(linewrapped[j])
-                        if (len(linewrapped) == 0):
-                        	lines.append("")
-                #and then print the lines
-                offset = 2
-                lastbreak = 0
-                for i in range(len(lines)):
-                    print(lines[i])
-                    if ((((i - lastbreak) + 1) % (os.get_terminal_size()[1] - (offset + 1))) == 0):
-                        input("<press return to continue>")
-                        lastbreak = i
-            # Handle any other plain text
-            else:
-                print_long(body)
-        # Handle non-text
-        else:
+        if download:
             tmpfp = tempfile.NamedTemporaryFile("wb", delete=False)
             tmpfp.write(fp.read())
             tmpfp.close()
-            if mime.startswith("image/"):
-                jpeg_to_text.print_img(tmpfp.name)
+            newname = input("save file as? ")
+            shutil.copy2(tmpfp.name, "./downloads/" + newname)
+            open_file("./downloads/" + newname)
+            os.unlink(tmpfp.name)
+        else:
+            # Handle text
+            if mime.startswith("text/"):
+                # Decode according to declared charset
+                m = Message()
+                m['content-type'] = mime
+                mime = m.get_content_type()
+                body = fp.read()
+                try:
+                    m.set_param("charset","UTF-8")
+                    body = body.decode(m.get_param("charset"))
+                except AttributeError:
+                    pass
+                # Handle a Gemini map
+                if mime == "text/gemini":
+                    menu = []
+                    preformatted = False
+                    #first, put all the lines into a list
+                    lines = []
+                    for num, line in enumerate(body.splitlines()):
+                        if line.startswith("```"):
+                            preformatted = not preformatted
+                        elif preformatted:
+                            lines.append(line)
+                        elif line.startswith("=>") and line[2:].strip():
+                            bits = line[2:].strip().split(maxsplit=1)
+                            link_url = bits[0]
+                            link_url = absolutise_url(url, link_url)
+                            menu.append(link_url)
+                            text = bits[1] if len(bits) == 2 else link_url
+                            lines.append("[%d] %s" % (len(menu), text))
+                        else:
+                            linewrapped = textwrap.fill(line, min(80, os.get_terminal_size()[0])).splitlines()
+                            for j in range(len(linewrapped)):
+                                lines.append(linewrapped[j])
+                            if (len(linewrapped) == 0):
+                            	lines.append("")
+                    #and then print the lines
+                    offset = 2
+                    lastbreak = 0
+                    for i in range(len(lines)):
+                        print(lines[i])
+                        if ((((i - lastbreak) + 1) % (os.get_terminal_size()[1] - (offset + 1))) == 0):
+                            input("<press return to continue>")
+                            lastbreak = i
+                # Handle any other plain text
+                else:
+                    print_long(body)
+            # Handle non-text
             else:
-                newname = input("save file as? ")
-                shutil.copy2(tmpfp.name, "./downloads/" + newname)
-                open_file("./downloads/" + newname)
-                os.unlink(tmpfp.name)
-        # Update history
-        hist.append(url)
+                tmpfp = tempfile.NamedTemporaryFile("wb", delete=False)
+                tmpfp.write(fp.read())
+                tmpfp.close()
+                if mime.startswith("image/"):
+                    jpeg_to_text.print_img(tmpfp.name)
+                else:
+                    newname = input("save file as? ")
+                    shutil.copy2(tmpfp.name, "./downloads/" + newname)
+                    open_file("./downloads/" + newname)
+                    os.unlink(tmpfp.name)
+            # Update history
+            hist.append(url)
