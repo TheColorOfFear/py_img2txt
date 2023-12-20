@@ -73,6 +73,51 @@ while True:
     if cmd.lower() == "q":
         print("Bye!")
         break
+    elif cmd.lower() == "prefs":
+        print("now in preferences editing mode (press x to exit)")
+        prefsList = []
+        print("")
+        for i, item in enumerate(prefs):
+            print(str(i) + ".) " + item + " : " + prefs[item])
+            prefsList.append(i)
+            prefsList.append([item, prefs[item]])
+        print("")
+        command = ""
+        changed = False
+        while True:
+            command = input(escape + "0m" + ">> ").strip()
+            if command.lower() == "x":
+                if changed:
+                    print("you have unsaved changes, are you sure you want to exit? (y/n)")
+                    command = input(escape + "0m" + ">> ").strip()
+                    if command.lower() == "y":
+                        break
+                    else:
+                        continue
+                else:
+                    break
+            if command.isnumeric():
+                if int(command) < len(prefs):
+                    print(prefsList[prefsList.index(int(command)) + 1][0] + " : " + prefsList[prefsList.index(int(command)) + 1][1])
+                    prefsList[prefsList.index(int(command)) + 1][1] = input("change to? ").lower()
+                    prefs[prefsList[prefsList.index(int(command)) + 1][0]] = prefsList[prefsList.index(int(command)) + 1][1]
+                    changed = True
+            else:
+                if command.lower() == "l":
+                    prefsList = []
+                    print("")
+                    for i, item in enumerate(prefs):
+                        print(str(i) + ".) " + item + " : " + prefs[item])
+                        prefsList.append(i)
+                        prefsList.append([item, prefs[item]])
+                    print("")
+                elif command.lower() == "w":
+                    pref_file = open("./prefs.cfg", "w")
+                    for item in prefs:
+                        pref_file.write(item + " : " + prefs[item] + "\n")
+                    pref_file.close()
+                    changed = False
+        continue
     # Get URL, from menu, history or direct entry
     if cmd.isnumeric():
         try:
