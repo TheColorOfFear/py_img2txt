@@ -14,7 +14,8 @@ escape = "\33["
 
 #get prefs or make file
 prefs = {
-    "image" : "colour",
+    "image"       : "colour",
+    "screenbreak" : "1",
 }
 try:
     pref_file = open("./prefs.cfg", "r")
@@ -40,20 +41,18 @@ def open_file(filename):
 
 def print_long(string):
     lines = []
-    for num, line in enumerate(string.splitlines()):
-        linewrapped = textwrap.fill(line, min(80, os.get_terminal_size()[0])).splitlines()
-        for j in range(len(linewrapped)):
-            lines.append(linewrapped[j])
-        if (len(linewrapped) == 0):
-            lines.append("")
-    #and then print the lines
-    offset = 2
-    lastbreak = 0
-    for i in range(len(lines)):
-        print(lines[i])
-        if ((((i - lastbreak) + 1) % (os.get_terminal_size()[1] - (offset + 1))) == 0):
-            input("<press return to continue>")
-        lastbreak = i
+    if prefs["screenbreak"] == "1":
+        lines = string.splitlines()
+        #and then print the lines
+        offset = 2
+        lastbreak = 0
+        for i in range(len(lines)):
+            print(lines[i])
+            if ((((i - lastbreak) + 1) % (os.get_terminal_size()[1] - (offset + 1))) == 0):
+                input("<press return to continue>")
+                lastbreak = i
+    else:
+        print(string)
 
 
 def absolutise_url(base, relative):
@@ -145,7 +144,7 @@ while True:
                     lastbreak = 0
                     for i in range(len(lines)):
                         print(lines[i])
-                        if ((((i - lastbreak) + 1) % (os.get_terminal_size()[1] - (offset + 1))) == 0):
+                        if (((((i - lastbreak) + 1) % (os.get_terminal_size()[1] - (offset + 1))) == 0) and (prefs["screenbreak"] == "1")):
                             input("<press return to continue>")
                             lastbreak = i
                 # Handle any other plain text
