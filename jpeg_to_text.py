@@ -138,7 +138,7 @@ def print_img_256(imgName):
         ascii_image += "\n"
     print(ascii_image)
 
-def print_img(imgName, printType="colour", imgRes="high"):
+def print_img(imgName, printType="colour", imgres="high"):
     if printType.lower() == "colour":
         if imgres.lower() == "high":
             print_img_col(imgName)
