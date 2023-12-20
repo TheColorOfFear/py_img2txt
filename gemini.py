@@ -12,15 +12,31 @@ import shutil
 
 escape = "\33["
 
+#get prefs or make file
+prefs = {
+    "image" : "colour",
+}
+try:
+    pref_file = open("./prefs.cfg", "r")
+    preferences = pref_file.readlines()
+    for item in preferences:
+        prefs[item.split(":")[0].strip()] = item.split(":")[1].strip()
+    pref_file.close()
+except FileNotFoundError:
+    pref_file = open("./prefs.cfg", "x")
+    for item in prefs:
+        pref_file.write(item + " : " + prefs[item])
+    pref_file.close()
+
+menu = []
+hist = []
+
 def open_file(filename):
     if sys.platform == "win32":
         os.startfile(filename)
     else:
         opener = "open" if sys.platform == "darwin" else "xdg-open"
         subprocess.call([opener, filename])
-
-menu = []
-hist = []
 
 def print_long(string):
     text = string.splitlines()
@@ -75,6 +91,8 @@ while True:
             tmpfp.write(fp.read())
             tmpfp.close()
             newname = input("save file as? ")
+            if not os.path.exists("./downloads/"):
+                os.makedirs("./downloads/")
             shutil.copy2(tmpfp.name, "./downloads/" + newname)
             open_file("./downloads/" + newname)
             os.unlink(tmpfp.name)
@@ -135,6 +153,8 @@ while True:
                     jpeg_to_text.print_img(tmpfp.name)
                 else:
                     newname = input("save file as? ")
+                    if not os.path.exists("./downloads/"):
+                        os.makedirs("./downloads/")
                     shutil.copy2(tmpfp.name, "./downloads/" + newname)
                     open_file("./downloads/" + newname)
                     os.unlink(tmpfp.name)
