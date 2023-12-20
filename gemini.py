@@ -14,7 +14,8 @@ escape = "\33["
 
 #get prefs or make file
 prefs = {
-    "image"       : "colour",
+    "image"       : "256",
+    "imgres"      : "high",
     "screenbreak" : "1",
 }
 try:
@@ -156,7 +157,7 @@ while True:
                 tmpfp.write(fp.read())
                 tmpfp.close()
                 if mime.startswith("image/"):
-                    jpeg_to_text.print_img(tmpfp.name, prefs["image"])
+                    jpeg_to_text.print_img(tmpfp.name, prefs["image"], prefs["imgres"])
                 else:
                     newname = input("save file as? ")
                     if not os.path.exists("./downloads/"):
