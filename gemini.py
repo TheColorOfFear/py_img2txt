@@ -26,7 +26,7 @@ try:
 except FileNotFoundError:
     pref_file = open("./prefs.cfg", "x")
     for item in prefs:
-        pref_file.write(item + " : " + prefs[item])
+        pref_file.write(item + " : " + prefs[item] + "\n")
     pref_file.close()
 
 menu = []
