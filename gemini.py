@@ -150,7 +150,7 @@ while True:
                 tmpfp.write(fp.read())
                 tmpfp.close()
                 if mime.startswith("image/"):
-                    jpeg_to_text.print_img(tmpfp.name)
+                    jpeg_to_text.print_img(tmpfp.name, prefs["image"])
                 else:
                     newname = input("save file as? ")
                     if not os.path.exists("./downloads/"):

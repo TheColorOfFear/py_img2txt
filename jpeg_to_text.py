@@ -61,7 +61,7 @@ def print_img_ld(imgName):
         ascii_image += "\n"
     print(ascii_image)
 
-def print_img(imgName):
+def print_img_col(imgName):
     img = Image.open(imgName, mode='r')
     width, height = img.size
     aspect_ratio = height/width
@@ -85,4 +85,53 @@ def print_img(imgName):
             except IndexError:
                 pass
         ascii_image += "\n"
+    print(ascii_image)
+
+def print_img(imgName, printType="colour"):
+    img = Image.open(imgName, mode='r')
+    width, height = img.size
+    aspect_ratio = height/width
+    new_width = 80
+    new_height = (aspect_ratio * new_width * 0.55) * 2
+    img = img.resize((new_width, int(new_height)))
+    if printType.lower() == "colour":
+        pixels = img.getdata()
+        ascii_image = "\n"
+        for i in range(0,len(pixels)//(new_width),2):
+            for j in range(new_width):
+                try:
+                    ascii_image += e + "38;2;"
+                    ascii_image += str(pixels[j + (i*new_width)][0]) + ";"
+                    ascii_image += str(pixels[j + (i*new_width)][1]) + ";"
+                    ascii_image += str(pixels[j + (i*new_width)][2]) + "m"
+                    ascii_image += e + "48;2;"
+                    ascii_image += str(pixels[j + ((i + 1)*new_width)][0]) + ";"
+                    ascii_image += str(pixels[j + ((i + 1)*new_width)][1]) + ";"
+                    ascii_image += str(pixels[j + ((i + 1)*new_width)][2]) + "m"
+                    ascii_image += "▀" + c
+                except IndexError:
+                    pass
+            ascii_image += "\n"
+    elif printType.lower() == "lr":
+        pixels = img.getdata()
+        ascii_image = "\n"
+        for i in range(len(pixels)//new_width):
+            for j in range(new_width):
+                ascii_image += e + "38;2;"
+                ascii_image += str(pixels[j + (i*new_width)][0]) + ";"
+                ascii_image += str(pixels[j + (i*new_width)][1]) + ";"
+                ascii_image += str(pixels[j + (i*new_width)][2]) + "m"
+                ascii_image += "█"
+            ascii_image += "\n"
+    elif printType.lower() == "bw":
+        img = img.convert('L')
+        pixels = img.getdata()
+        ascii_image = "\n"
+        for i in range(len(pixels)//new_width):
+            for j in range(new_width):
+                try:
+                    ascii_image += chars[min( (pixels[j + (i*new_width)]//25),(len(chars) - 1))]
+                except:
+                    print(pixels[j + (i*new_width)]//25)
+            ascii_image += "\n"
     print(ascii_image)
