@@ -39,14 +39,21 @@ def open_file(filename):
         subprocess.call([opener, filename])
 
 def print_long(string):
-    text = string.splitlines()
-    if (len(text) > os.get_terminal_size()[1] - 1):
-        i = 0
-        while (i <= len(text)):
-            for j in range(os.get_terminal_size[1] - 1):
-                i += 1
-                if (i <= len(text)):
-                    print(text[i])
+    lines = []
+    for num, line in enumerate(string.splitlines()):
+        linewrapped = textwrap.fill(line, min(80, os.get_terminal_size()[0])).splitlines()
+        for j in range(len(linewrapped)):
+            lines.append(linewrapped[j])
+        if (len(linewrapped) == 0):
+            lines.append("")
+    #and then print the lines
+    offset = 2
+    lastbreak = 0
+    for i in range(len(lines)):
+        print(lines[i])
+        if ((((i - lastbreak) + 1) % (os.get_terminal_size()[1] - (offset + 1))) == 0):
+            input("<press return to continue>")
+        lastbreak = i
 
 
 def absolutise_url(base, relative):

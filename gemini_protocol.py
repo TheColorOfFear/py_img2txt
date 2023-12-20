@@ -23,8 +23,8 @@ def gemini(url):
     if parsed_url.scheme != "gemini":
         if parsed_url.scheme == "file":
             try:
-                fp = open(parsed_url.netloc, "r")
-                mime = magic.Magic(mime=True).from_file(parsed_url.netloc)
+                fp = open(url.replace(parsed_url.scheme + "://", ""), "r")
+                mime = magic.Magic(mime=True).from_file(url.replace(parsed_url.scheme + "://", ""))
                 status = "202"
             except Exception as err:
                 print(err)
