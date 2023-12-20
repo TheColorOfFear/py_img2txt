@@ -25,6 +25,8 @@ def gemini(url):
             try:
                 fp = open(url.replace(parsed_url.scheme + "://", ""), "r")
                 mime = magic.Magic(mime=True).from_file(url.replace(parsed_url.scheme + "://", ""))
+                if url[-4:].lower() == ".gmi":
+                    mime = "text/gemini"
                 status = "202"
             except Exception as err:
                 print(err)
