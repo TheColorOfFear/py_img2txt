@@ -50,16 +50,6 @@ def print_long(string):
     else:
         print(string)
 
-
-def absolutise_url(base, relative):
-    # Absolutise relative links
-    if "://" not in relative:
-        # Python's URL tools somehow only work with known schemes?
-        base = base.replace("gemini://","http://")
-        relative = urllib.parse.urljoin(base, relative)
-        relative = relative.replace("http://", "gemini://")
-    return relative
-
 #get prefs or make file
 prefs = {
     "image"       : "256",
@@ -183,7 +173,7 @@ while True:
                         elif line.startswith("=>") and line[2:].strip():
                             bits = line[2:].strip().split(maxsplit=1)
                             link_url = bits[0]
-                            link_url = absolutise_url(url, link_url)
+                            link_url = gemini_protocol.absolutise_url(url, link_url)
                             menu.append(link_url)
                             text = bits[1] if len(bits) == 2 else link_url
                             lines.append("[%d] %s" % (len(menu), text))
