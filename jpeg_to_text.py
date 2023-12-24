@@ -14,11 +14,11 @@ chars= [" "+c, bc[0]+fc[1]+"█"+c, bc[0]+fc[1]+"▓"+c, bc[0]+fc[1]+"▒"+c, bc
 #    chars[i] = chars[i]
 #    print(chars[i], end="")
 
-def print_img_bw(imgName):
+def print_img_bw(imgName, wid=80):
     img = Image.open(imgName, mode='r')
     width, height = img.size
     aspect_ratio = height/width
-    new_width = 80
+    new_width = wid
     new_height = aspect_ratio * new_width * 0.55
     img = img.resize((new_width, int(new_height)))
     img = img.convert('L')
@@ -42,11 +42,11 @@ def print_img_bw(imgName):
     '''
     print(ascii_image)
 
-def print_img_ld(imgName):
+def print_img_ld(imgName, wid=80):
     img = Image.open(imgName, mode='r')
     width, height = img.size
     aspect_ratio = height/width
-    new_width = 80
+    new_width = wid
     new_height = aspect_ratio * new_width * 0.55
     img = img.resize((new_width, int(new_height)))
     pixels = img.getdata()
@@ -61,11 +61,11 @@ def print_img_ld(imgName):
         ascii_image += "\n"
     print(ascii_image)
 
-def print_img_col(imgName):
+def print_img_col(imgName, wid=80):
     img = Image.open(imgName, mode='r')
     width, height = img.size
     aspect_ratio = height/width
-    new_width = 80
+    new_width = wid
     new_height = (aspect_ratio * new_width * 0.55) * 2
     img = img.resize((new_width, int(new_height)))
     pixels = img.getdata()
@@ -87,11 +87,11 @@ def print_img_col(imgName):
         ascii_image += "\n"
     print(ascii_image)
 
-def print_img_256_ld(imgName):
+def print_img_256_ld(imgName, wid=80):
     img = Image.open(imgName, mode='r')
     width, height = img.size
     aspect_ratio = height/width
-    new_width = 80
+    new_width = wid
     new_height = (aspect_ratio * new_width * 0.55) * 2
     img = img.resize((new_width, int(new_height)))
     pixels = img.getdata()
@@ -110,11 +110,11 @@ def print_img_256_ld(imgName):
         ascii_image += "\n"
     print(ascii_image)
 
-def print_img_256(imgName):
+def print_img_256(imgName, wid=80):
     img = Image.open(imgName, mode='r')
     width, height = img.size
     aspect_ratio = height/width
-    new_width = 80
+    new_width = wid
     new_height = (aspect_ratio * new_width * 0.55) * 2
     img = img.resize((new_width, int(new_height)))
     pixels = img.getdata()
@@ -138,16 +138,18 @@ def print_img_256(imgName):
         ascii_image += "\n"
     print(ascii_image)
 
-def print_img(imgName, printType="colour", imgres="high"):
+def print_img(imgName, printType="colour", imgres="high", wid=80):
     if printType.lower() == "colour":
         if imgres.lower() == "high":
-            print_img_col(imgName)
+            print_img_col(imgName, wid)
         else:
-            print_img_ld(imgName)
-    if printType.lower() == "256":
+            print_img_ld(imgName, wid)
+    elif printType.lower() == "256":
         if imgres.lower() == "high":
-            print_img_256(imgName)
+            print_img_256(imgName, wid)
         else:
-            print_img_256_ld(imgName)
+            print_img_256_ld(imgName, wid)
     elif printType.lower() == "bw":
-        print_img_bw(imgName)
+        print_img_bw(imgName, wid)
+    else:
+        print_img_256_ld(imgName, wid)

@@ -12,23 +12,30 @@ import shutil
 
 escape = "\33["
 
+def savePrefs():
+    pref_file = open("./prefs.cfg", "w")
+    for item in prefs:
+        pref_file.write(item + " : " + prefs[item] + "\n")
+    pref_file.close()
+
+def loadPrefs():
+    try:
+        pref_file = open("./prefs.cfg", "r")
+        preferences = pref_file.readlines()
+        for item in preferences:
+            prefs[item.split(":")[0].strip()] = item.split(":")[1].strip()
+        pref_file.close()
+    except FileNotFoundError:
+        savePrefs()
+
 #get prefs or make file
 prefs = {
     "image"       : "256",
     "imgres"      : "high",
+    "imgwid"      : "80",
     "screenbreak" : "1",
 }
-try:
-    pref_file = open("./prefs.cfg", "r")
-    preferences = pref_file.readlines()
-    for item in preferences:
-        prefs[item.split(":")[0].strip()] = item.split(":")[1].strip()
-    pref_file.close()
-except FileNotFoundError:
-    pref_file = open("./prefs.cfg", "x")
-    for item in prefs:
-        pref_file.write(item + " : " + prefs[item] + "\n")
-    pref_file.close()
+loadPrefs()
 
 menu = []
 hist = []
@@ -112,10 +119,7 @@ while True:
                         prefsList.append([item, prefs[item]])
                     print("")
                 elif command.lower() == "w":
-                    pref_file = open("./prefs.cfg", "w")
-                    for item in prefs:
-                        pref_file.write(item + " : " + prefs[item] + "\n")
-                    pref_file.close()
+                    savePrefs()
                     changed = False
         continue
     # Get URL, from menu, history or direct entry
@@ -202,7 +206,10 @@ while True:
                 tmpfp.write(fp.read())
                 tmpfp.close()
                 if mime.startswith("image/"):
-                    jpeg_to_text.print_img(tmpfp.name, prefs["image"], prefs["imgres"])
+                    if prefs["imgwid"] == "max":
+                        jpeg_to_text.print_img(tmpfp.name, prefs["image"], prefs["imgres"], os.get_terminal_size()[0])
+                    else:
+                        jpeg_to_text.print_img(tmpfp.name, prefs["image"], prefs["imgres"], int(prefs["imgwid"]))
                 else:
                     newname = input("save file as? ")
                     if not os.path.exists("./downloads/"):
