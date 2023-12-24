@@ -28,18 +28,6 @@ def loadPrefs():
     except FileNotFoundError:
         savePrefs()
 
-#get prefs or make file
-prefs = {
-    "image"       : "256",
-    "imgres"      : "high",
-    "imgwid"      : "80",
-    "screenbreak" : "1",
-}
-loadPrefs()
-
-menu = []
-hist = []
-
 def open_file(filename):
     if sys.platform == "win32":
         os.startfile(filename)
@@ -71,6 +59,19 @@ def absolutise_url(base, relative):
         relative = urllib.parse.urljoin(base, relative)
         relative = relative.replace("http://", "gemini://")
     return relative
+
+#get prefs or make file
+prefs = {
+    "image"       : "256",
+    "imgres"      : "high",
+    "imgwid"      : "80",
+    "screenbreak" : "1",
+}
+loadPrefs()
+
+url = ""
+menu = []
+hist = []
 
 while True:
     download = False
@@ -121,6 +122,9 @@ while True:
                 elif command.lower() == "w":
                     savePrefs()
                     changed = False
+        continue
+    elif cmd.lower() == "u":
+        print(url)
         continue
     # Get URL, from menu, history or direct entry
     if cmd.isnumeric():
