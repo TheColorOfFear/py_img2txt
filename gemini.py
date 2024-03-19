@@ -7,7 +7,7 @@ import tempfile
 import textwrap
 import urllib.parse
 import gemini_protocol
-import jpeg_to_text
+import img2txt
 import shutil
 
 escape = "\33["
@@ -200,10 +200,7 @@ while True:
                 tmpfp.write(fp.read())
                 tmpfp.close()
                 if mime.startswith("image/"):
-                    if prefs["imgwid"] == "max":
-                        jpeg_to_text.print_img(tmpfp.name, prefs["image"], prefs["imgres"], os.get_terminal_size()[0])
-                    else:
-                        jpeg_to_text.print_img(tmpfp.name, prefs["image"], prefs["imgres"], int(prefs["imgwid"]))
+                        img2txt.print_img(tmpfp.name, prefs["image"], prefs["imgres"], prefs["imgwid"])
                 else:
                     newname = input("save file as? ")
                     if not os.path.exists("./downloads/"):
