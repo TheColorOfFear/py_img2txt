@@ -37,7 +37,7 @@ def open_img(imgName, wid=80, stretch=0.55, hstretch=1):
     pixels = img.getdata()
     return img, newwid
 
-def print_img_bw(imgName, wid=80):
+def print_img_bw(imgName, wid=80, ret=False):
     img, newwid = open_img(imgName, wid)
     pixels = img.convert(mode="L").getdata()
     ascii_image = "\n"
@@ -58,9 +58,13 @@ def print_img_bw(imgName, wid=80):
     ascii_image = [new_pixels[index:index + wid] for index in range(0, new_pixels_count, wid)]
     ascii_image = "\n".join(ascii_image)
     '''
-    print(ascii_image)
+    if ret:
+        return ascii_image
+    else:
+        print(ascii_image)
+        return None
 
-def print_img_ld(imgName, wid=80):
+def print_img_ld(imgName, wid=80, ret=False):
     img, newwid = open_img(imgName, wid)
     pixels = img.getdata()
     ascii_image = "\n"
@@ -72,9 +76,13 @@ def print_img_ld(imgName, wid=80):
             ascii_image += str(pixels[j + (i*newwid)][2]) + "m"
             ascii_image += "█"
         ascii_image += "\n"
-    print(ascii_image)
+    if ret:
+        return ascii_image
+    else:
+        print(ascii_image)
+        return None
 
-def print_img_col(imgName, wid=80):
+def print_img_col(imgName, wid=80, ret=False):
     img, newwid = open_img(imgName, wid, 1)
     pixels = img.getdata()
     ascii_image = "\n"
@@ -93,9 +101,13 @@ def print_img_col(imgName, wid=80):
             except IndexError:
                 pass
         ascii_image += "\n"
-    print(ascii_image)
+    if ret:
+        return ascii_image
+    else:
+        print(ascii_image)
+        return None
 
-def print_img_256_ld(imgName, wid=80):
+def print_img_256_ld(imgName, wid=80, ret=False):
     img, newwid = open_img(imgName, wid, 1)
     pixels = img.getdata()
     ascii_image = "\n"
@@ -111,9 +123,13 @@ def print_img_256_ld(imgName, wid=80):
             except IndexError:
                 pass
         ascii_image += "\n"
-    print(ascii_image)
+    if ret:
+        return ascii_image
+    else:
+        print(ascii_image)
+        return None
 
-def print_img_256(imgName, wid=80):
+def print_img_256(imgName, wid=80, ret=False):
     img, newwid = open_img(imgName, wid, 1)
     pixels = img.getdata()
     ascii_image = "\n"
@@ -134,9 +150,13 @@ def print_img_256(imgName, wid=80):
             except IndexError:
                 pass
         ascii_image += "\n"
-    print(ascii_image)
+    if ret:
+        return ascii_image
+    else:
+        print(ascii_image)
+        return None
 
-def print_img_256_vh(imgName, wid=80):
+def print_img_256_vh(imgName, wid=80, ret=False):
     def getcol_index(colour, indice):
         r = ((colours[indice][0]) * 5) // 256
         g = ((colours[indice][1]) * 5) // 256
@@ -209,9 +229,13 @@ def print_img_256_vh(imgName, wid=80):
             except IndexError:
                 pass
         ascii_image += "\n"
-    print(ascii_image)
+    if ret:
+        return ascii_image
+    else:
+        print(ascii_image)
+        return None
 
-def print_img(imgName, printType="colour", imgres="high", wid=80):
+def print_img(imgName, printType="colour", imgres="high", wid=80, ret=False):
     if wid == "max":
         wid = os.get_terminal_size()[0]
     elif wid == "original":
@@ -220,20 +244,21 @@ def print_img(imgName, printType="colour", imgres="high", wid=80):
         wid = int(wid)
     if printType.lower() == "colour":
         if imgres.lower() == "high":
-            print_img_col(imgName, wid)
+            out = print_img_col(imgName, wid, ret)
         else:
-            print_img_ld(imgName, wid)
+            out = print_img_ld(imgName, wid, ret)
     elif printType.lower() == "256":
         if imgres.lower() == "high":
-            print_img_256(imgName, wid)
+            out = print_img_256(imgName, wid, ret)
         else:
-            print_img_256_ld(imgName, wid)
+            out = print_img_256_ld(imgName, wid, ret)
     elif printType.lower() == "bw":
-        print_img_bw(imgName, wid)
+        out = print_img_bw(imgName, wid, ret)
     elif printType.lower() == "test":
-        print_img_256_vh(imgName, wid)
+        out = print_img_256_vh(imgName, wid, ret)
     else:
-        print_img_256_ld(imgName, wid)
+        out = print_img_256_ld(imgName, wid, ret)
+    return out
 
 if __name__ == '__main__':
     print_type = "256"
@@ -250,4 +275,4 @@ if __name__ == '__main__':
         print_img(img_name, print_type, img_res, img_width)
     else:
         #img_name = input("file name? : ")
-        print("")
+        print("usage: [program] [file] [type] [res] [width]")
